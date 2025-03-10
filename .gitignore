@@ -4,6 +4,11 @@ myenv/
 
 *.pyo
 
+# SQLite database files
+*.db
+friends.db
+
+
 *.pyd
 
 *.pyw
