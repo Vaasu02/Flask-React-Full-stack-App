@@ -2,16 +2,19 @@ from app import app, db
 from flask import request, jsonify
 from models import Friend
 
+#home route
 @app.route('/')
 def index():
     return "Server is started"
 
+#get all friends
 @app.route('/api/friends', methods=['GET']) #its a decorator 
 def get_friends():
     friends = Friend.query.all() #query is a method that returns all the friends from the database
     friend_list = [friend.to_json() for friend in friends]
     return jsonify(friend_list)
 
+#create a new friend
 @app.route('/api/friends',methods=['POST'])
 def creat_friend():
     try:
@@ -30,9 +33,9 @@ def creat_friend():
     
         #for image url
         if gender == 'male':
-            img_url = f'https://avatar-iran.liara.run/public/boy?username={name}'
+            img_url = f'https://avatar.iran.liara.run/public/boy?username={name}'
         elif gender == 'female':
-            img_url = f'https://avatar-iran.liara.run/public/girl?username={name}'
+            img_url = f'https://avatar.iran.liara.run/public/girl?username={name}'
         else:
             img_url = None
 
@@ -45,3 +48,37 @@ def creat_friend():
         db.session.rollback()
         return jsonify({'error':str(e)}), 500
     
+#delete a friend
+@app.route('/api/friends/<int:friend_id>', methods=['DELETE'])
+def delete_friend(friend_id):
+    try:
+        friend = Friend.query.get(friend_id)
+        if not friend:
+            return jsonify({'error':'Friend not found'}), 404
+        db.session.delete(friend)
+        db.session.commit()
+        return jsonify({'message':'Friend deleted successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error':str(e)}), 500
+    
+#update a friend
+@app.route('/api/friends/<int:friend_id>', methods=['PATCH'])
+def update_friend(friend_id):
+    try:
+        friend = Friend.query.get(friend_id)
+        if not friend:
+            return jsonify({'error':'Friend not found'}), 404
+        data = request.json
+        friend.name = data.get('name', friend.name)
+        friend.role = data.get('role', friend.role)
+        friend.description = data.get('description', friend.description)
+        friend.gender = data.get('gender', friend.gender)
+        db.session.commit()
+        return jsonify({'friend':friend.to_json(),'message':'Friend updated successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error':str(e)}), 500
+        
+        
+
