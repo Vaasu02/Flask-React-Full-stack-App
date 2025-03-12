@@ -1,13 +1,16 @@
-import { Box, Button, Container, Flex, Text, useColorMode, useColorModeValue } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, Text } from "@chakra-ui/react";
 import { IoMoon } from "react-icons/io5";
 import { LuSun } from "react-icons/lu";
+import { useColorMode } from "@/components/ui/color-mode";
+import CreateUserModal from "./CreateUserModal";
 
-
-const Navbar = ({ setUsers }) => {
+const Navbar = () => {
 	const { colorMode, toggleColorMode } = useColorMode();
+	const navBg = colorMode === "light" ? "gray.200" : "gray.700";
+
 	return (
 		<Container maxW={"900px"}>
-			<Box px={4} my={4} borderRadius={5} bg={useColorModeValue("gray.200", "gray.700")}>
+			<Box px={4} my={4} borderRadius={5} bg={navBg}>
 				<Flex h='16' alignItems={"center"} justifyContent={"space-between"}>
 					{/* Left side */}
 					<Flex
@@ -29,14 +32,16 @@ const Navbar = ({ setUsers }) => {
 							BFFship 🔥
 						</Text>
 
-						<Button onClick={toggleColorMode}>
-							{colorMode === "light" ? <IoMoon /> : <LuSun size={20} />}
+						<Button onClick={toggleColorMode} variant="ghost" size="md">
+							{colorMode === "light" ? <IoMoon size={20} /> : <LuSun size={20} />}
 						</Button>
-						<CreateUserModal setUsers={setUsers} />
+						<CreateUserModal />
+						
 					</Flex>
 				</Flex>
 			</Box>
 		</Container>
 	);
 };
+
 export default Navbar;
